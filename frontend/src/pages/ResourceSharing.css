@@ -1,0 +1,79 @@
+.resource-container {
+  padding: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.resource-container h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #1e3a5f;
+}
+
+.resource-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.resource-form input {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  flex: 1;
+  min-width: 150px;
+}
+
+.resource-form button {
+  background-color: #2563eb;
+  color: white;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.resource-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  background-color: #f8fafc;
+}
+
+.resource-card p { margin: 0 0 4px 0; font-weight: 600; }
+
+.resource-card a {
+  color: #2563eb;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.resource-card a:hover { text-decoration: underline; }
+
+.file-type-badge {
+  margin-left: 10px;
+  background-color: #e2e8f0;
+  color: #475569;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.btn-delete {
+  background-color: #dc2626;
+  color: white;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-delete:hover { background-color: #b91c1c; }
