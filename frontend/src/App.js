@@ -30,6 +30,9 @@ import Resources from "./pages/Resources";
 // Assignments
 import Assignments from "./pages/Assignments";
 
+// Timetable
+import Timetable from "./pages/Timetable";
+
 function App() {
   return (
     <BrowserRouter>
@@ -63,6 +66,9 @@ function App() {
 
         {/* Assignments */}
         <Route path="/assignments" element={<Assignments />} />
+
+        {/* Timetable */}
+        <Route path="/timetable" element={<Timetable />} />
 
         {/* Default */}
         <Route path="*" element={<Navigate to="/" replace />} />

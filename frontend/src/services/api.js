@@ -679,6 +679,70 @@ export const assignmentsAPI = {
   },
 };
 
-const api = { sportsAPI, eventAPI, clubsAPI, studyGroupsAPI, resourcesAPI, assignmentsAPI };
+// Timetable API endpoints
+export const timetableAPI = {
+  getAll: async (token) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/timetable`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to fetch timetable');
+      return data;
+    } catch (error) {
+      console.error('Error fetching timetable:', error);
+      throw error;
+    }
+  },
+
+  create: async (slotData, token) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/timetable`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(slotData),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to create slot');
+      return data;
+    } catch (error) {
+      console.error('Error creating timetable slot:', error);
+      throw error;
+    }
+  },
+
+  update: async (slotId, slotData, token) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/timetable/${slotId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(slotData),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to update slot');
+      return data;
+    } catch (error) {
+      console.error('Error updating timetable slot:', error);
+      throw error;
+    }
+  },
+
+  delete: async (slotId, token) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/timetable/${slotId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to delete slot');
+      return data;
+    } catch (error) {
+      console.error('Error deleting timetable slot:', error);
+      throw error;
+    }
+  },
+};
+
+const api = { sportsAPI, eventAPI, clubsAPI, studyGroupsAPI, resourcesAPI, assignmentsAPI, timetableAPI };
 
 export default api;

@@ -438,6 +438,9 @@ function Sports() {
             <a href="/assignments" onClick={(e) => { e.preventDefault(); navigate('/assignments'); setIsNavOpen(false); }}>
               Assignments
             </a>
+            <a href="/timetable" onClick={(e) => { e.preventDefault(); navigate('/timetable'); setIsNavOpen(false); }}>
+              Timetable
+            </a>
           </div>
 
           <button 

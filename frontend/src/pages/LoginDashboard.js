@@ -265,6 +265,9 @@ function LoginDashboard() {
             <a href="/assignments" onClick={(e) => { e.preventDefault(); navigate('/assignments'); setIsNavOpen(false); }}>
               Assignments
             </a>
+            <a href="/timetable" onClick={(e) => { e.preventDefault(); navigate('/timetable'); setIsNavOpen(false); }}>
+              Timetable
+            </a>
 
             <div className="nav__cta">
               <button className="header__notificationBtn" aria-label="Notifications">

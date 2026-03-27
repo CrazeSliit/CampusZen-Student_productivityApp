@@ -42,6 +42,10 @@ app.use("/api/study-groups", studyGroupRoutes);
 const assignmentRoutes = require("./routes/assignmentroutes");
 app.use("/api/assignments", assignmentRoutes);
 
+// Timetable routes
+const timetableRoutes = require("./routes/timetableroutes");
+app.use("/api/timetable", timetableRoutes);
+
 // Resource routes
 const resourceRoutes = require("./routes/resourceroutes");
 app.use("/api/resources", resourceRoutes);
