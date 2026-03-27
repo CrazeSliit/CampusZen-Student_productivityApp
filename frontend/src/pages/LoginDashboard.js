@@ -259,6 +259,9 @@ function LoginDashboard() {
             <a href="/study-groups" onClick={(e) => { e.preventDefault(); navigate('/study-groups'); setIsNavOpen(false); }}>
               Study Groups
             </a>
+            <a href="/resources" onClick={(e) => { e.preventDefault(); navigate('/resources'); setIsNavOpen(false); }}>
+              Resources
+            </a>
 
             <div className="nav__cta">
               <button className="header__notificationBtn" aria-label="Notifications">

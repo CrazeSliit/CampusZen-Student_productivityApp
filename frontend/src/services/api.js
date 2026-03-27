@@ -527,6 +527,78 @@ export const studyGroupsAPI = {
   },
 };
 
-const api = { sportsAPI, eventAPI, clubsAPI, studyGroupsAPI };
+// Resources API endpoints
+export const resourcesAPI = {
+  getAll: async (params = {}) => {
+    try {
+      const queryString = new URLSearchParams(params).toString();
+      const url = `${API_BASE_URL}/resources${queryString ? `?${queryString}` : ''}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to fetch resources');
+      return data;
+    } catch (error) {
+      console.error('Error fetching resources:', error);
+      throw error;
+    }
+  },
+
+  getById: async (resourceId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/resources/${resourceId}`);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to fetch resource');
+      return data;
+    } catch (error) {
+      console.error('Error fetching resource:', error);
+      throw error;
+    }
+  },
+
+  upload: async (formData, token) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/resources`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData,
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to upload resource');
+      return data;
+    } catch (error) {
+      console.error('Error uploading resource:', error);
+      throw error;
+    }
+  },
+
+  delete: async (resourceId, token) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/resources/${resourceId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to delete resource');
+      return data;
+    } catch (error) {
+      console.error('Error deleting resource:', error);
+      throw error;
+    }
+  },
+
+  incrementDownload: async (resourceId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/resources/${resourceId}/download`, { method: 'PATCH' });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to update download count');
+      return data;
+    } catch (error) {
+      console.error('Error updating download count:', error);
+      throw error;
+    }
+  },
+};
+
+const api = { sportsAPI, eventAPI, clubsAPI, studyGroupsAPI, resourcesAPI };
 
 export default api;

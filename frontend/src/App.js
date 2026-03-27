@@ -24,6 +24,9 @@ import LoginDashboard from "./pages/LoginDashboard";
 import StudyGroups from "./pages/StudyGroups";
 import StudyGroupDetail from "./pages/StudyGroupDetail";
 
+// Resources
+import Resources from "./pages/Resources";
+
 function App() {
   return (
     <BrowserRouter>
@@ -51,6 +54,9 @@ function App() {
         {/* Study Groups */}
         <Route path="/study-groups" element={<StudyGroups />} />
         <Route path="/study-groups/:groupId" element={<StudyGroupDetail />} />
+
+        {/* Resources */}
+        <Route path="/resources" element={<Resources />} />
 
         {/* Default */}
         <Route path="*" element={<Navigate to="/" replace />} />

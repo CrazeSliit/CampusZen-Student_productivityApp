@@ -136,9 +136,8 @@ function StudyGroups() {
     try {
       const response = await studyGroupsAPI.joinGroup(selectedGroup._id, token);
       if (response.success) {
-        showToast("Joined group successfully!");
         setShowJoinModal(false);
-        fetchGroups();
+        navigate(`/study-groups/${selectedGroup._id}`);
       }
     } catch (err) {
       showToast(err.message || "Failed to join group.");
@@ -199,6 +198,7 @@ function StudyGroups() {
             <Link to="/health" onClick={() => setIsNavOpen(false)}>Health</Link>
             <Link to="/events" onClick={() => setIsNavOpen(false)}>Events</Link>
             <Link to="/study-groups" onClick={() => setIsNavOpen(false)}>Study Groups</Link>
+            <Link to="/resources" onClick={() => setIsNavOpen(false)}>Resources</Link>
           </div>
 
           <div className="header__profileDropdown" ref={profileRef}>

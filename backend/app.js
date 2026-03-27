@@ -38,6 +38,11 @@ app.use("/api/clubs", clubRoutes);
 const studyGroupRoutes = require("./routes/studygrouproutes");
 app.use("/api/study-groups", studyGroupRoutes);
 
+// Resource routes
+const resourceRoutes = require("./routes/resourceroutes");
+app.use("/api/resources", resourceRoutes);
+app.use("/uploads", require("express").static(require("path").join(__dirname, "uploads")));
+
 // Error handling middleware (must be last)
 app.use(notFound);
 app.use(errorHandler);
