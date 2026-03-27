@@ -235,8 +235,8 @@ function Home() {
             <a href="#career" onClick={(e) => scrollToSection(e, "career")}>
               Career
             </a>
-            <a href="#study" onClick={(e) => scrollToSection(e, "study")}>
-              Study
+            <a href="/study-groups" onClick={(e) => { e.preventDefault(); navigate('/study-groups'); setIsNavOpen(false); }}>
+              Study Groups
             </a>
 
             <div className="nav__cta">

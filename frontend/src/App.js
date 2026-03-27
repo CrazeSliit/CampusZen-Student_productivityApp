@@ -20,6 +20,10 @@ import Clubs from "./pages/Clubs";
 // new pages for login
 import LoginDashboard from "./pages/LoginDashboard";
 
+// Study Groups
+import StudyGroups from "./pages/StudyGroups";
+import StudyGroupDetail from "./pages/StudyGroupDetail";
+
 function App() {
   return (
     <BrowserRouter>
@@ -43,6 +47,10 @@ function App() {
         <Route path="/healthy-habits" element={<HealthyHabits />} />
         <Route path="/health" element={<Health />} />
         <Route path="/dashboard" element={<LoginDashboard />} />
+
+        {/* Study Groups */}
+        <Route path="/study-groups" element={<StudyGroups />} />
+        <Route path="/study-groups/:groupId" element={<StudyGroupDetail />} />
 
         {/* Default */}
         <Route path="*" element={<Navigate to="/" replace />} />

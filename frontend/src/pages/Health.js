@@ -195,12 +195,8 @@ function Health() {
             }}>
               Career
             </a>
-            <a href="#study" onClick={(e) => {
-              e.preventDefault();
-              showToast("Study section coming soon");
-              setIsNavOpen(false);
-            }}>
-              Study
+            <a href="/study-groups" onClick={(e) => { e.preventDefault(); navigate('/study-groups'); setIsNavOpen(false); }}>
+              Study Groups
             </a>
 
             <div className="nav__cta">

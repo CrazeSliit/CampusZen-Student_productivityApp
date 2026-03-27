@@ -34,6 +34,10 @@ app.use("/api/sports", sportRoutes);
 const clubRoutes = require("./routes/clubroutes");
 app.use("/api/clubs", clubRoutes);
 
+// Study Group routes
+const studyGroupRoutes = require("./routes/studygrouproutes");
+app.use("/api/study-groups", studyGroupRoutes);
+
 // Error handling middleware (must be last)
 app.use(notFound);
 app.use(errorHandler);

@@ -424,8 +424,8 @@ function Clubs() {
             <a href="#career" onClick={() => setIsNavOpen(false)}>
               Career
             </a>
-            <a href="#study" onClick={() => setIsNavOpen(false)}>
-              Study
+            <a href="/study-groups" onClick={(e) => { e.preventDefault(); navigate('/study-groups'); setIsNavOpen(false); }}>
+              Study Groups
             </a>
           </div>
 

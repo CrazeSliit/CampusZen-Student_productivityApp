@@ -427,6 +427,106 @@ export const clubsAPI = {
   },
 };
 
-const api = { sportsAPI, eventAPI, clubsAPI };
+// Study Group API endpoints
+export const studyGroupsAPI = {
+  // Get all study groups
+  getAllGroups: async (params = {}) => {
+    try {
+      const queryString = new URLSearchParams(params).toString();
+      const url = `${API_BASE_URL}/study-groups${queryString ? `?${queryString}` : ''}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to fetch study groups');
+      return data;
+    } catch (error) {
+      console.error('Error fetching study groups:', error);
+      throw error;
+    }
+  },
+
+  // Get single group by ID
+  getGroupById: async (groupId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/study-groups/${groupId}`);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to fetch study group');
+      return data;
+    } catch (error) {
+      console.error('Error fetching study group:', error);
+      throw error;
+    }
+  },
+
+  // Create a new study group
+  createGroup: async (groupData, token) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/study-groups`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(groupData),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to create study group');
+      return data;
+    } catch (error) {
+      console.error('Error creating study group:', error);
+      throw error;
+    }
+  },
+
+  // Join a study group
+  joinGroup: async (groupId, token) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/study-groups/${groupId}/members`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to join study group');
+      return data;
+    } catch (error) {
+      console.error('Error joining study group:', error);
+      throw error;
+    }
+  },
+
+  // Leave a study group
+  leaveGroup: async (groupId, userId, token) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/study-groups/${groupId}/members/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to leave study group');
+      return data;
+    } catch (error) {
+      console.error('Error leaving study group:', error);
+      throw error;
+    }
+  },
+
+  // Get group members
+  getGroupMembers: async (groupId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/study-groups/${groupId}/members`);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to fetch members');
+      return data;
+    } catch (error) {
+      console.error('Error fetching group members:', error);
+      throw error;
+    }
+  },
+};
+
+const api = { sportsAPI, eventAPI, clubsAPI, studyGroupsAPI };
 
 export default api;
