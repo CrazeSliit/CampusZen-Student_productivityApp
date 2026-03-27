@@ -147,6 +147,9 @@ function EventDashboard() {
             <a href="/resources" onClick={(e) => { e.preventDefault(); navigate('/resources'); setIsNavOpen(false); }}>
               Resources
             </a>
+            <a href="/assignments" onClick={(e) => { e.preventDefault(); navigate('/assignments'); setIsNavOpen(false); }}>
+              Assignments
+            </a>
           </div>
 
           <button className="header__notificationBtn" aria-label="Notifications">

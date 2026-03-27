@@ -38,6 +38,10 @@ app.use("/api/clubs", clubRoutes);
 const studyGroupRoutes = require("./routes/studygrouproutes");
 app.use("/api/study-groups", studyGroupRoutes);
 
+// Assignment routes
+const assignmentRoutes = require("./routes/assignmentroutes");
+app.use("/api/assignments", assignmentRoutes);
+
 // Resource routes
 const resourceRoutes = require("./routes/resourceroutes");
 app.use("/api/resources", resourceRoutes);

@@ -197,6 +197,7 @@ function StudyGroupDetail() {
             <Link to="/events" onClick={() => setIsNavOpen(false)}>Events</Link>
             <Link to="/study-groups" onClick={() => setIsNavOpen(false)}>Study Groups</Link>
             <Link to="/resources" onClick={() => setIsNavOpen(false)}>Resources</Link>
+            <Link to="/assignments" onClick={() => setIsNavOpen(false)}>Assignments</Link>
           </div>
 
           <div className="header__profileDropdown" ref={profileRef}>

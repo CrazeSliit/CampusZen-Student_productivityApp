@@ -599,6 +599,86 @@ export const resourcesAPI = {
   },
 };
 
-const api = { sportsAPI, eventAPI, clubsAPI, studyGroupsAPI, resourcesAPI };
+// Assignments API endpoints
+export const assignmentsAPI = {
+  getAll: async (params = {}) => {
+    try {
+      const queryString = new URLSearchParams(params).toString();
+      const url = `${API_BASE_URL}/assignments${queryString ? `?${queryString}` : ''}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to fetch assignments');
+      return data;
+    } catch (error) {
+      console.error('Error fetching assignments:', error);
+      throw error;
+    }
+  },
+
+  create: async (assignmentData, token) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/assignments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(assignmentData),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to create assignment');
+      return data;
+    } catch (error) {
+      console.error('Error creating assignment:', error);
+      throw error;
+    }
+  },
+
+  updateStatus: async (assignmentId, status, token) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/assignments/${assignmentId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ status }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to update status');
+      return data;
+    } catch (error) {
+      console.error('Error updating assignment status:', error);
+      throw error;
+    }
+  },
+
+  update: async (assignmentId, assignmentData, token) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/assignments/${assignmentId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(assignmentData),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to update assignment');
+      return data;
+    } catch (error) {
+      console.error('Error updating assignment:', error);
+      throw error;
+    }
+  },
+
+  delete: async (assignmentId, token) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/assignments/${assignmentId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to delete assignment');
+      return data;
+    } catch (error) {
+      console.error('Error deleting assignment:', error);
+      throw error;
+    }
+  },
+};
+
+const api = { sportsAPI, eventAPI, clubsAPI, studyGroupsAPI, resourcesAPI, assignmentsAPI };
 
 export default api;

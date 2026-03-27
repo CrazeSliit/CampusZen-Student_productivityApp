@@ -27,6 +27,9 @@ import StudyGroupDetail from "./pages/StudyGroupDetail";
 // Resources
 import Resources from "./pages/Resources";
 
+// Assignments
+import Assignments from "./pages/Assignments";
+
 function App() {
   return (
     <BrowserRouter>
@@ -57,6 +60,9 @@ function App() {
 
         {/* Resources */}
         <Route path="/resources" element={<Resources />} />
+
+        {/* Assignments */}
+        <Route path="/assignments" element={<Assignments />} />
 
         {/* Default */}
         <Route path="*" element={<Navigate to="/" replace />} />
