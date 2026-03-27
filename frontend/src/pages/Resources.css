@@ -347,6 +347,15 @@
   box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
 }
 
+.resources__input--invalid {
+  border-color: #dc2626;
+}
+
+.resources__input--invalid:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220,38,38,0.1);
+}
+
 .resources__select { cursor: pointer; }
 
 .resources__textarea {
@@ -374,6 +383,11 @@
 .resources__dropZone--hasFile {
   border-color: #10b981;
   background: #f0fdf4;
+}
+
+.resources__dropZone--invalid {
+  border-color: #dc2626;
+  background: #fef2f2;
 }
 
 .resources__dropPrompt {
@@ -408,6 +422,12 @@
 .resources__fileIcon { font-size: 1.5rem; }
 .resources__fileName { font-size: 0.9rem; font-weight: 600; color: #1e293b; }
 .resources__fileSize { font-size: 0.8rem; color: #64748b; }
+
+.resources__errorText {
+  margin: 0;
+  color: #dc2626;
+  font-size: 0.8rem;
+}
 
 .resources__formActions {
   display: flex;

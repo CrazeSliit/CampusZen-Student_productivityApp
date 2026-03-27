@@ -412,6 +412,15 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
+.studyGroups__input--invalid {
+  border-color: #dc2626;
+}
+
+.studyGroups__input--invalid:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
 .studyGroups__textarea {
   resize: vertical;
   min-height: 100px;
@@ -424,6 +433,13 @@
   padding: 0.5rem 0;
 }
 
+.studyGroups__radioGroup--invalid {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
 .studyGroups__radioLabel {
   display: flex;
   align-items: center;
@@ -431,6 +447,12 @@
   font-size: 0.95rem;
   color: #374151;
   cursor: pointer;
+}
+
+.studyGroups__errorText {
+  margin: 0;
+  color: #dc2626;
+  font-size: 0.8rem;
 }
 
 .studyGroups__formActions {

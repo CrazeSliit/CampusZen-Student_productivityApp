@@ -6,6 +6,12 @@ import "./Home.css";
 import campusLogo from "../images/campus_logo.png";
 import profileImg from "../images/profile.png";
 
+const MIN_GROUP_NAME_LENGTH = 3;
+const MIN_MODULE_LENGTH = 2;
+const MAX_DESCRIPTION_LENGTH = 500;
+const MIN_MEMBERS = 2;
+const MAX_MEMBERS = 100;
+
 function StudyGroups() {
   const navigate = useNavigate();
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -29,6 +35,7 @@ function StudyGroups() {
     type: "public",
     maxMembers: 20,
   });
+  const [createFormErrors, setCreateFormErrors] = useState({});
   const navLinksRef = useRef(null);
   const navToggleRef = useRef(null);
   const profileRef = useRef(null);
@@ -101,19 +108,81 @@ function StudyGroups() {
   const handleCreateFormChange = (e) => {
     const { name, value } = e.target;
     setCreateForm((prev) => ({ ...prev, [name]: value }));
+    setCreateFormErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
+
+  const closeCreateModal = () => {
+    setShowCreateModal(false);
+    setCreateFormErrors({});
+  };
+
+  const openCreateModal = () => {
+    if (!isLoggedIn) {
+      showToast("Please log in to create a study group.");
+      return;
+    }
+    setCreateFormErrors({});
+    setShowCreateModal(true);
+  };
+
+  const validateCreateForm = () => {
+    const errors = {};
+    const name = createForm.name.trim();
+    const module = createForm.module.trim();
+    const description = createForm.description.trim();
+    const maxMembers = Number(createForm.maxMembers);
+
+    if (!name) errors.name = "Group name is required.";
+    else if (name.length < MIN_GROUP_NAME_LENGTH) {
+      errors.name = `Group name must be at least ${MIN_GROUP_NAME_LENGTH} characters.`;
+    }
+
+    if (!module) errors.module = "Module / Subject is required.";
+    else if (module.length < MIN_MODULE_LENGTH) {
+      errors.module = `Module / Subject must be at least ${MIN_MODULE_LENGTH} characters.`;
+    }
+
+    if (description.length > MAX_DESCRIPTION_LENGTH) {
+      errors.description = `Description cannot exceed ${MAX_DESCRIPTION_LENGTH} characters.`;
+    }
+
+    if (!["public", "private"].includes(createForm.type)) {
+      errors.type = "Please choose a valid group type.";
+    }
+
+    if (!Number.isInteger(maxMembers)) {
+      errors.maxMembers = "Max members must be a whole number.";
+    } else if (maxMembers < MIN_MEMBERS || maxMembers > MAX_MEMBERS) {
+      errors.maxMembers = `Max members must be between ${MIN_MEMBERS} and ${MAX_MEMBERS}.`;
+    }
+
+    return errors;
   };
 
   const handleCreateSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = validateCreateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setCreateFormErrors(validationErrors);
+      showToast("Please fix the highlighted fields.");
+      return;
+    }
+
     const token = localStorage.getItem("token");
     try {
       const response = await studyGroupsAPI.createGroup(
-        { ...createForm, maxMembers: Number(createForm.maxMembers) },
+        {
+          ...createForm,
+          name: createForm.name.trim(),
+          module: createForm.module.trim(),
+          description: createForm.description.trim(),
+          maxMembers: Number(createForm.maxMembers),
+        },
         token
       );
       if (response.success) {
         showToast("Study group created successfully!");
-        setShowCreateModal(false);
+        closeCreateModal();
         setCreateForm({ name: "", module: "", description: "", type: "public", maxMembers: 20 });
         fetchGroups();
       }
@@ -243,7 +312,7 @@ function StudyGroups() {
           </div>
           <button
             className="studyGroups__createBtn"
-            onClick={() => setShowCreateModal(true)}
+            onClick={openCreateModal}
           >
             + Create Group
           </button>
@@ -302,7 +371,7 @@ function StudyGroups() {
             <div className="studyGroups__emptyIcon">📚</div>
             <h3 className="studyGroups__emptyTitle">No study groups found</h3>
             <p className="studyGroups__emptyText">Be the first to create a study group!</p>
-            <button className="studyGroups__createBtn" onClick={() => setShowCreateModal(true)}>
+            <button className="studyGroups__createBtn" onClick={openCreateModal}>
               + Create Group
             </button>
           </div>
@@ -372,13 +441,13 @@ function StudyGroups() {
 
       {/* Create Group Modal */}
       {showCreateModal && (
-        <div className="modal__overlay" onClick={() => setShowCreateModal(false)}>
+        <div className="modal__overlay" onClick={closeCreateModal}>
           <div className="modal__content" onClick={(e) => e.stopPropagation()}>
             <div className="modal__header">
               <h2 className="modal__title">Create Study Group</h2>
               <button
                 className="modal__close"
-                onClick={() => setShowCreateModal(false)}
+                onClick={closeCreateModal}
                 aria-label="Close modal"
               >
                 ×
@@ -388,41 +457,47 @@ function StudyGroups() {
               <div className="studyGroups__formGroup">
                 <label className="studyGroups__label">Group Name *</label>
                 <input
-                  className="studyGroups__input"
+                  className={`studyGroups__input ${createFormErrors.name ? "studyGroups__input--invalid" : ""}`.trim()}
                   type="text"
                   name="name"
                   value={createForm.name}
                   onChange={handleCreateFormChange}
                   placeholder="e.g. Database Systems Study Group"
                   required
+                  aria-invalid={!!createFormErrors.name}
                 />
+                {createFormErrors.name && <p className="studyGroups__errorText">{createFormErrors.name}</p>}
               </div>
               <div className="studyGroups__formGroup">
                 <label className="studyGroups__label">Module / Subject *</label>
                 <input
-                  className="studyGroups__input"
+                  className={`studyGroups__input ${createFormErrors.module ? "studyGroups__input--invalid" : ""}`.trim()}
                   type="text"
                   name="module"
                   value={createForm.module}
                   onChange={handleCreateFormChange}
                   placeholder="e.g. CS3043 Database Systems"
                   required
+                  aria-invalid={!!createFormErrors.module}
                 />
+                {createFormErrors.module && <p className="studyGroups__errorText">{createFormErrors.module}</p>}
               </div>
               <div className="studyGroups__formGroup">
                 <label className="studyGroups__label">Description</label>
                 <textarea
-                  className="studyGroups__input studyGroups__textarea"
+                  className={`studyGroups__input studyGroups__textarea ${createFormErrors.description ? "studyGroups__input--invalid" : ""}`.trim()}
                   name="description"
                   value={createForm.description}
                   onChange={handleCreateFormChange}
                   placeholder="What will your group focus on?"
                   rows={3}
+                  aria-invalid={!!createFormErrors.description}
                 />
+                {createFormErrors.description && <p className="studyGroups__errorText">{createFormErrors.description}</p>}
               </div>
               <div className="studyGroups__formGroup">
                 <label className="studyGroups__label">Group Type *</label>
-                <div className="studyGroups__radioGroup">
+                <div className={`studyGroups__radioGroup ${createFormErrors.type ? "studyGroups__radioGroup--invalid" : ""}`.trim()}>
                   <label className="studyGroups__radioLabel">
                     <input
                       type="radio"
@@ -444,11 +519,12 @@ function StudyGroups() {
                     🔒 Private — invite only
                   </label>
                 </div>
+                {createFormErrors.type && <p className="studyGroups__errorText">{createFormErrors.type}</p>}
               </div>
               <div className="studyGroups__formGroup">
                 <label className="studyGroups__label">Max Members *</label>
                 <input
-                  className="studyGroups__input"
+                  className={`studyGroups__input ${createFormErrors.maxMembers ? "studyGroups__input--invalid" : ""}`.trim()}
                   type="number"
                   name="maxMembers"
                   value={createForm.maxMembers}
@@ -456,13 +532,15 @@ function StudyGroups() {
                   min={2}
                   max={100}
                   required
+                  aria-invalid={!!createFormErrors.maxMembers}
                 />
+                {createFormErrors.maxMembers && <p className="studyGroups__errorText">{createFormErrors.maxMembers}</p>}
               </div>
               <div className="studyGroups__formActions">
                 <button
                   type="button"
                   className="studyGroups__btn studyGroups__btn--secondary"
-                  onClick={() => setShowCreateModal(false)}
+                  onClick={closeCreateModal}
                 >
                   Cancel
                 </button>

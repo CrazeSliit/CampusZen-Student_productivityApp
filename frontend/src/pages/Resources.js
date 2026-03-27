@@ -7,6 +7,10 @@ import campusLogo from "../images/campus_logo.png";
 import profileImg from "../images/profile.png";
 
 const RESOURCE_TYPES = ["pdf", "notes", "slides", "video", "link"];
+const MAX_UPLOAD_SIZE_BYTES = 50 * 1024 * 1024;
+const ALLOWED_FILE_EXTENSIONS = [
+  "pdf", "doc", "docx", "ppt", "pptx", "txt", "png", "jpg", "jpeg", "mp4", "webm",
+];
 
 const TYPE_ICONS = {
   pdf:    { icon: "📄", label: "PDF",    color: "#e74c3c" },
@@ -38,6 +42,7 @@ function Resources() {
   });
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadErrors, setUploadErrors] = useState({});
   const navLinksRef = useRef(null);
   const navToggleRef = useRef(null);
   const profileRef = useRef(null);
@@ -82,6 +87,7 @@ function Resources() {
   const handleOpenUpload = () => {
     if (!isLoggedIn) { showToast("Please log in to upload resources."); return; }
     fetchMyGroups();
+    setUploadErrors({});
     setShowUploadModal(true);
   };
 
@@ -109,40 +115,129 @@ function Resources() {
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setUploadForm((p) => ({ ...p, [name]: value }));
+    setUploadErrors((p) => ({ ...p, [name]: undefined }));
+
+    if (name === "type") {
+      if (value === "link") {
+        setSelectedFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        setUploadErrors((p) => ({ ...p, file: undefined }));
+      } else {
+        setUploadErrors((p) => ({ ...p, fileUrl: undefined }));
+      }
+    }
+  };
+
+  const getFileExtension = (name = "") => name.split(".").pop()?.toLowerCase() || "";
+
+  const validateSelectedFile = (file) => {
+    if (!file) return "Please select a file.";
+
+    if (file.size > MAX_UPLOAD_SIZE_BYTES) {
+      return "File size must be 50 MB or less.";
+    }
+
+    const ext = getFileExtension(file.name);
+    if (!ALLOWED_FILE_EXTENSIONS.includes(ext)) {
+      return "Unsupported file format.";
+    }
+
+    return "";
+  };
+
+  const isValidHttpUrl = (value) => {
+    try {
+      const parsed = new URL(value);
+      return parsed.protocol === "http:" || parsed.protocol === "https:";
+    } catch (_) {
+      return false;
+    }
+  };
+
+  const validateUploadForm = () => {
+    const errors = {};
+    const title = uploadForm.title.trim();
+    const module = uploadForm.module.trim();
+    const description = uploadForm.description.trim();
+    const fileUrl = uploadForm.fileUrl.trim();
+
+    if (!title) errors.title = "Title is required.";
+    else if (title.length < 3) errors.title = "Title must be at least 3 characters.";
+
+    if (!module) errors.module = "Module / Subject is required.";
+    else if (module.length < 2) errors.module = "Module / Subject must be at least 2 characters.";
+
+    if (!RESOURCE_TYPES.includes(uploadForm.type)) {
+      errors.type = "Please choose a valid resource type.";
+    }
+
+    if (description.length > 500) {
+      errors.description = "Description cannot exceed 500 characters.";
+    }
+
+    if (uploadForm.type === "link") {
+      if (!fileUrl) errors.fileUrl = "URL is required for link resources.";
+      else if (!isValidHttpUrl(fileUrl)) errors.fileUrl = "Enter a valid URL starting with http:// or https://.";
+    } else {
+      const fileError = validateSelectedFile(selectedFile);
+      if (fileError) errors.file = fileError;
+    }
+
+    return errors;
   };
 
   const handleFileDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
-    if (file) setSelectedFile(file);
+    if (!file) return;
+
+    const fileError = validateSelectedFile(file);
+    setSelectedFile(file);
+    setUploadErrors((p) => ({ ...p, file: fileError || undefined }));
   };
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
-    if (file) setSelectedFile(file);
+    if (!file) return;
+
+    const fileError = validateSelectedFile(file);
+    setSelectedFile(file);
+    setUploadErrors((p) => ({ ...p, file: fileError || undefined }));
+  };
+
+  const closeUploadModal = () => {
+    setShowUploadModal(false);
+    setUploadErrors({});
   };
 
   const handleUploadSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = validateUploadForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setUploadErrors(validationErrors);
+      showToast("Please fix the highlighted fields.");
+      return;
+    }
+
     const token = localStorage.getItem("token");
     setUploading(true);
     try {
       const formData = new FormData();
-      formData.append("title", uploadForm.title);
-      formData.append("module", uploadForm.module);
+      formData.append("title", uploadForm.title.trim());
+      formData.append("module", uploadForm.module.trim());
       formData.append("type", uploadForm.type);
-      if (uploadForm.description) formData.append("description", uploadForm.description);
+      if (uploadForm.description.trim()) formData.append("description", uploadForm.description.trim());
       if (uploadForm.groupId) formData.append("groupId", uploadForm.groupId);
       if (uploadForm.type === "link") {
-        formData.append("fileUrl", uploadForm.fileUrl);
+        formData.append("fileUrl", uploadForm.fileUrl.trim());
       } else if (selectedFile) {
         formData.append("file", selectedFile);
       }
       const res = await resourcesAPI.upload(formData, token);
       if (res.success) {
         showToast("Resource uploaded successfully!");
-        setShowUploadModal(false);
+        closeUploadModal();
         setUploadForm({ title: "", module: "", type: "pdf", description: "", groupId: "", fileUrl: "" });
         setSelectedFile(null);
         fetchResources();
@@ -358,38 +453,41 @@ function Resources() {
 
       {/* Upload Modal */}
       {showUploadModal && (
-        <div className="modal__overlay" onClick={() => setShowUploadModal(false)}>
+        <div className="modal__overlay" onClick={closeUploadModal}>
           <div className="modal__content resources__modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal__header resources__modalHeader">
               <h2 className="modal__title">Upload Resource</h2>
-              <button className="modal__close" onClick={() => setShowUploadModal(false)}>×</button>
+              <button className="modal__close" onClick={closeUploadModal}>×</button>
             </div>
 
             <form className="resources__form" onSubmit={handleUploadSubmit}>
               <div className="resources__formRow">
                 <div className="resources__formGroup">
                   <label className="resources__label">Title *</label>
-                  <input className="resources__input" type="text" name="title"
+                  <input className={`resources__input ${uploadErrors.title ? "resources__input--invalid" : ""}`.trim()} type="text" name="title"
                     value={uploadForm.title} onChange={handleFormChange}
-                    placeholder="e.g. Chapter 3 Notes" required />
+                    placeholder="e.g. Chapter 3 Notes" required aria-invalid={!!uploadErrors.title} />
+                  {uploadErrors.title && <p className="resources__errorText">{uploadErrors.title}</p>}
                 </div>
                 <div className="resources__formGroup">
                   <label className="resources__label">Module / Subject *</label>
-                  <input className="resources__input" type="text" name="module"
+                  <input className={`resources__input ${uploadErrors.module ? "resources__input--invalid" : ""}`.trim()} type="text" name="module"
                     value={uploadForm.module} onChange={handleFormChange}
-                    placeholder="e.g. CS3043" required />
+                    placeholder="e.g. CS3043" required aria-invalid={!!uploadErrors.module} />
+                  {uploadErrors.module && <p className="resources__errorText">{uploadErrors.module}</p>}
                 </div>
               </div>
 
               <div className="resources__formRow">
                 <div className="resources__formGroup">
                   <label className="resources__label">Resource Type *</label>
-                  <select className="resources__input resources__select" name="type"
+                  <select className={`resources__input resources__select ${uploadErrors.type ? "resources__input--invalid" : ""}`.trim()} name="type"
                     value={uploadForm.type} onChange={handleFormChange} required>
                     {RESOURCE_TYPES.map((t) => (
                       <option key={t} value={t}>{TYPE_ICONS[t].icon} {TYPE_ICONS[t].label}</option>
                     ))}
                   </select>
+                  {uploadErrors.type && <p className="resources__errorText">{uploadErrors.type}</p>}
                 </div>
                 <div className="resources__formGroup">
                   <label className="resources__label">Share to Group (optional)</label>
@@ -406,15 +504,16 @@ function Resources() {
               {uploadForm.type === "link" ? (
                 <div className="resources__formGroup">
                   <label className="resources__label">URL *</label>
-                  <input className="resources__input" type="url" name="fileUrl"
+                  <input className={`resources__input ${uploadErrors.fileUrl ? "resources__input--invalid" : ""}`.trim()} type="url" name="fileUrl"
                     value={uploadForm.fileUrl} onChange={handleFormChange}
-                    placeholder="https://..." required />
+                    placeholder="https://..." required aria-invalid={!!uploadErrors.fileUrl} />
+                  {uploadErrors.fileUrl && <p className="resources__errorText">{uploadErrors.fileUrl}</p>}
                 </div>
               ) : (
                 <div className="resources__formGroup">
                   <label className="resources__label">File *</label>
                   <div
-                    className={`resources__dropZone ${isDragging ? "resources__dropZone--active" : ""} ${selectedFile ? "resources__dropZone--hasFile" : ""}`}
+                    className={`resources__dropZone ${isDragging ? "resources__dropZone--active" : ""} ${selectedFile ? "resources__dropZone--hasFile" : ""} ${uploadErrors.file ? "resources__dropZone--invalid" : ""}`}
                     onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                     onDragLeave={() => setIsDragging(false)}
                     onDrop={handleFileDrop}
@@ -439,19 +538,21 @@ function Resources() {
                       </div>
                     )}
                   </div>
+                  {uploadErrors.file && <p className="resources__errorText">{uploadErrors.file}</p>}
                 </div>
               )}
 
               <div className="resources__formGroup">
                 <label className="resources__label">Description (optional)</label>
-                <textarea className="resources__input resources__textarea" name="description"
+                <textarea className={`resources__input resources__textarea ${uploadErrors.description ? "resources__input--invalid" : ""}`.trim()} name="description"
                   value={uploadForm.description} onChange={handleFormChange}
                   placeholder="Brief description of this resource..." rows={3} />
+                {uploadErrors.description && <p className="resources__errorText">{uploadErrors.description}</p>}
               </div>
 
               <div className="resources__formActions">
                 <button type="button" className="resources__btn resources__btn--secondary"
-                  onClick={() => setShowUploadModal(false)}>Cancel</button>
+                  onClick={closeUploadModal}>Cancel</button>
                 <button type="submit" className="resources__btn resources__btn--primary" disabled={uploading}>
                   {uploading ? "Uploading..." : "Upload"}
                 </button>
