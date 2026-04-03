@@ -85,6 +85,13 @@ function Timetable() {
     setIsLoggedIn(!!localStorage.getItem("token"));
   }, []);
 
+  const handleUnauthorized = useCallback(() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    navigate("/login", { replace: true });
+  }, [navigate]);
+
   const fetchSlots = useCallback(async () => {
     const token = localStorage.getItem("token");
     if (!token) { setLoading(false); return; }
@@ -93,12 +100,17 @@ function Timetable() {
     try {
       const res = await timetableAPI.getAll(token);
       if (res.success) setSlots(res.data);
-    } catch {
+    } catch (err) {
+      if (err.message === "Unauthorized") {
+        setError("Your session has expired. Please log in again.");
+        handleUnauthorized();
+        return;
+      }
       setError("Failed to load timetable.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [handleUnauthorized]);
 
   useEffect(() => { fetchSlots(); }, [fetchSlots]);
 
@@ -181,6 +193,11 @@ function Timetable() {
         fetchSlots();
       }
     } catch (err) {
+      if (err.message === "Unauthorized") {
+        showToast("Session expired. Please log in again.");
+        handleUnauthorized();
+        return;
+      }
       showToast(err.message || "Failed to save slot.");
     } finally {
       setSubmitting(false);
@@ -196,6 +213,11 @@ function Timetable() {
         showToast("Slot deleted.");
       }
     } catch (err) {
+      if (err.message === "Unauthorized") {
+        showToast("Session expired. Please log in again.");
+        handleUnauthorized();
+        return;
+      }
       showToast(err.message || "Failed to delete slot.");
     }
   };
