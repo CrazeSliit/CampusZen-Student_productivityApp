@@ -33,6 +33,9 @@ import Assignments from "./pages/Assignments";
 // Timetable
 import Timetable from "./pages/Timetable";
 
+// Study Help
+import StudyHelp from "./pages/StudyHelp";
+
 function App() {
   return (
     <BrowserRouter>
@@ -69,6 +72,9 @@ function App() {
 
         {/* Timetable */}
         <Route path="/timetable" element={<Timetable />} />
+
+        {/* Study Help */}
+        <Route path="/study-help" element={<StudyHelp />} />
 
         {/* Default */}
         <Route path="*" element={<Navigate to="/" replace />} />

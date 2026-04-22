@@ -270,17 +270,8 @@ function ActivityDetails() {
             <a href="#career" onClick={() => setIsNavOpen(false)}>
               Career
             </a>
-            <a href="/study-groups" onClick={(e) => { e.preventDefault(); navigate('/study-groups'); setIsNavOpen(false); }}>
-              Study Groups
-            </a>
-            <a href="/resources" onClick={(e) => { e.preventDefault(); navigate('/resources'); setIsNavOpen(false); }}>
-              Resources
-            </a>
-            <a href="/assignments" onClick={(e) => { e.preventDefault(); navigate('/assignments'); setIsNavOpen(false); }}>
-              Assignments
-            </a>
-            <a href="/timetable" onClick={(e) => { e.preventDefault(); navigate('/timetable'); setIsNavOpen(false); }}>
-              Timetable
+            <a href="/study-help" onClick={(e) => { e.preventDefault(); navigate('/study-help'); setIsNavOpen(false); }}>
+              Study Help
             </a>
           </div>
 
